@@ -1,0 +1,28 @@
+{
+  "name": "tooltip-markdown",
+  "version": "0.0.1",
+  "description": "Javascript that enhances editable areas implementing tooltip with simple markdown tools. Perfect solution to clear front-end noise of an form.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel ./index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tooltip",
+    "markdown",
+    "medium-editor",
+    "form",
+    "simple"
+  ],
+  "author": "Rick Stanley",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/showdown": "^1.9.3",
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "lit-html": "^1.1.2",
+    "showdown": "^1.9.1"
+  }
+}
