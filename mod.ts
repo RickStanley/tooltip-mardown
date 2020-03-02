@@ -17,6 +17,12 @@ class TooltipMarkdown {
         let converter = new Converter();
         newElement = document.createElement("div");
         newElement.contentEditable = "true";
+        // May think of a better way to get from a existing source
+        // I made this specifically for my use case, where I fetched
+        // some persistent data from my database, placed the markdown as a value in a TextArea
+        // and then convert back to HTML so the admin could manipulate, and would ease the steps
+        // if the textarea was inside an form, so it could be ease as just converting to FormData
+        // and completing the circle.
         newElement.innerHTML = converter.makeHtml(element.innerText || element.value);
         element.insertAdjacentElement("beforebegin", newElement);
         this.original = element;
@@ -25,17 +31,21 @@ class TooltipMarkdown {
     } else {
       this.root = document.querySelector(element);
     }
+
     const wrap = document.createElement("div");
     wrap.id = "tooltip-reference";
 
+    // Clone here so we can leave the original reference behind.
     document.body.appendChild(wrap.cloneNode(true));
 
+    // @todo Should be elsewhere within this class
     window.addEventListener('click', (e) => {
       if (!this.toggleOpen) {
         render(html``, document.querySelector('#tooltip-reference'));
       } else this.toggleOpen = false;
     });
 
+    // @todo Should be elsewhere within this class
     this.root.addEventListener("mouseup", (e) => {
       const selection = window.getSelection();
       const range = selection.getRangeAt(0);
@@ -48,6 +58,7 @@ class TooltipMarkdown {
     });
   }
 
+  // @todo We need to center the tooltip
   private makeTooltip(x: number, y: number) {
     return html`
     <style>
