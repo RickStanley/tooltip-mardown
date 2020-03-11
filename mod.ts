@@ -1,4 +1,4 @@
-import { html, render } from "lit-html";
+import { html, render, nothing, TemplateResult } from "lit-html";
 import { Converter } from "showdown";
 
 type stringOrElement = string | HTMLInputElement | HTMLTextAreaElement;
@@ -41,7 +41,7 @@ class TooltipMarkdown {
     // @todo Should be elsewhere within this class
     window.addEventListener('click', (e) => {
       if (!this.toggleOpen) {
-        render(html``, document.querySelector('#tooltip-reference'));
+        render(nothing, document.querySelector('#tooltip-reference'));
       } else this.toggleOpen = false;
     });
 
@@ -53,13 +53,31 @@ class TooltipMarkdown {
       const count = range.endOffset - range.startOffset;
       if (rect.width > 0 && count) {
         this.toggleOpen = true;
-        render(this.makeTooltip(rect.x, rect.y), document.querySelector("#tooltip-reference"));
+        render(this.makeTooltip(rect.x + (rect.width / 2), rect.y), document.querySelector("#tooltip-reference"));
       }
     });
   }
 
+  private boldfy(): void {
+    const selection = window.getSelection();
+    console.log(selection.getRangeAt(0));
+    
+    const range = selection.getRangeAt(0).cloneRange();
+    range.surroundContents(document.createElement('b'));
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  private italify(): void {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0).cloneRange();
+    range.surroundContents(document.createElement('i'));
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
   // @todo We need to center the tooltip
-  private makeTooltip(x: number, y: number) {
+  private makeTooltip(x: number, y: number): TemplateResult {
     return html`
     <style>
       .tooltip-container * {
@@ -135,16 +153,19 @@ class TooltipMarkdown {
       }
 
       @keyframes popUp {
+        from {
+          transform: translateY(0%) translateX(-50%) translateZ(0);
+        }
         to {
-          transform: translateY(-100%) translateX(0) translateZ(0);
+          transform: translateY(-100%) translateX(-50%) translateZ(0);
         }
       }
       @keyframes popDown {
         from {
-          transform: translateY(-100%) translateX(0) translateZ(0);
+          transform: translateY(-100%) translateX(-50%) translateZ(0);
         }
         to {
-          transform: translateY(0%) translateX(0) translateZ(0);
+          transform: translateY(0%) translateX(-50%) translateZ(0);
         }
       }
       @keyframes fadeIn {
@@ -153,10 +174,10 @@ class TooltipMarkdown {
         }
       }
     </style>
-    <div class="tooltip-container ${y < 50 ? 'bottom' : ''}" style="--x: ${x}px;--y:${y < 50 ? y + (8 + 6) : y}px;">
+    <div class="tooltip-container ${y < 50 ? 'bottom' : ''}" style="--x: ${~~(x)}px;--y:${~~(y < 50 ? y + (8 + 6) : y)}px;">
       <div class="tooltip__actions">
-        <button class="tooltip__action">B</button>
-        <button class="tooltip__action">I</button>
+        <button class="tooltip__action" @click=${this.boldfy}>B</button>
+        <button class="tooltip__action" @click=${this.italify}>I</button>
       </div>
     </div>`;
   }
